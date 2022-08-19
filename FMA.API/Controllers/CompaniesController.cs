@@ -18,7 +18,7 @@ public class CompaniesController : ControllerBase
         _companyBiz = companyBiz;
     }
 
-    [HttpGet]
+    [HttpGet("all")]
     public async Task<IActionResult> GetCompanies()
     {
         try
@@ -32,6 +32,22 @@ public class CompaniesController : ControllerBase
             return StatusCode(500, ex.Message);
         }
     }
+
+    [HttpGet]
+    public async Task<IActionResult> GetCompaniesWithPaging(int pageNumber, int pageSize, string searchStr)
+    {
+        try
+        {
+            var companies = await _companyBiz.GetCompanyWithPaging(pageNumber, pageSize, searchStr);
+            return Ok(companies);
+        }
+        catch (Exception ex)
+        {
+            //log error
+            return StatusCode(500, ex.Message);
+        }
+    }
+
 
     [HttpGet("{id}", Name = "CompanyById")]
     public async Task<IActionResult> GetCompany(int id)

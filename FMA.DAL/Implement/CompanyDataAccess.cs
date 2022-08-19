@@ -4,6 +4,9 @@ using FMA.DAL.Interface;
 using FMA.Entities;
 using FMA.Entities.Dto;
 using System.Data;
+using FMA.Entities.Common;
+using Microsoft.Extensions.Configuration;
+using System.Data.SqlClient;
 
 namespace FMA.DAL.Implement;
 
@@ -16,13 +19,59 @@ public class CompanyDataAccess : ICompanyDataAccess
         _context = context;
     }
 
-    public async Task<IEnumerable<Company>> GetCompanies()
+    public async Task<IEnumerable<Company>> GetAllCompanies()
     {
         var query = "SELECT * FROM Companies";
         using (var connection = _context.CreateConnection())
         {
             var companies = await connection.QueryAsync<Company>(query);
             return companies.ToList();
+        }
+    }
+
+    //public async Task<PagingResponseModel<List<Company>>> GetCompanyWithPaging(int pageNumber, int pageSize, string searchString)
+    //{
+    //    int maxPagSize = 50;
+    //    pageSize = (pageSize > 0 && pageSize <= maxPagSize) ? pageSize : maxPagSize;
+
+    //    int skip = (pageNumber - 1) * pageSize;
+    //    int take = pageSize;
+
+    //    string query = @"SELECT 
+    //                        COUNT(*)
+    //                        FROM Companies WHERE Name LIKE @SearchStr
+ 
+    //                        SELECT  * FROM Companies WHERE Name LIKE @SearchStr
+    //                        ORDER BY Id
+    //                        OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY"
+    //    ;
+
+    //    using (var connection = _context.CreateConnection())
+    //    {
+    //        var reader = await connection.QueryMultipleAsync(query, new { Skip = skip, Take = take, SearchStr = "%" + searchString + "%" });
+
+    //        int count = reader.Read<int>().FirstOrDefault();
+    //        List<Company> companies = (await reader.ReadAsync<Company>()).ToList();
+
+    //        var result = new PagingResponseModel<List<Company>>(companies, count, pageNumber, pageSize);
+    //        return result;
+    //    }
+    //}
+
+    public async Task<PagingResponseModel<List<Company>>> GetCompanyWithPaging(int pageNumber, int pageSize, string searchString)
+    {
+        using (var connection = _context.CreateConnection())
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("PageNumber", pageNumber, DbType.Int32, ParameterDirection.Input);
+            parameters.Add("PageSize", pageSize, DbType.Int32, ParameterDirection.Input);
+            parameters.Add("SearchStr", searchString, DbType.String, ParameterDirection.Input);
+
+            var reader = await connection.QueryMultipleAsync("GetListCompaniesWithPaging", parameters,commandType:CommandType.StoredProcedure);
+            int count = reader.Read<int>().FirstOrDefault();
+            List<Company> companies = (await reader.ReadAsync<Company>()).ToList();
+
+            return new PagingResponseModel<List<Company>>(companies, count, pageNumber, pageSize);
         }
     }
 
@@ -82,12 +131,11 @@ public class CompanyDataAccess : ICompanyDataAccess
 
     public async Task<Company> GetCompanyByEmployeeId(int id)
     {
-        var procedureName = "ShowCompanyForProvidedEmployeeId";
         var parameters = new DynamicParameters();
         parameters.Add("Id", id, DbType.Int32, ParameterDirection.Input);
         using (var connection = _context.CreateConnection())
         {
-            var company = await connection.QueryFirstOrDefaultAsync<Company>(procedureName, parameters, commandType: CommandType.StoredProcedure);
+            var company = await connection.QueryFirstOrDefaultAsync<Company>("ShowCompanyForProvidedEmployeeId", parameters, commandType: CommandType.StoredProcedure);
             return company;
         }
     }

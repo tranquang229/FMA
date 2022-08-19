@@ -2,6 +2,7 @@
 using FMA.Entities;
 using FMA.Entities.Dto;
 using FMA.Business.Interface;
+using FMA.Entities.Common;
 
 namespace FMA.Business.Implements;
 
@@ -16,7 +17,12 @@ public class CompanyBiz : ICompanyBiz
 
     public async Task<IEnumerable<Company>> GetCompanies()
     {
-        return await _companyDataAccess.GetCompanies();
+        return await _companyDataAccess.GetAllCompanies();
+    }
+
+    public async Task<PagingResponseModel<List<Company>>> GetCompanyWithPaging(int pageNumber, int pageSize, string searchStr)
+    {
+        return await _companyDataAccess.GetCompanyWithPaging(pageNumber, pageSize, searchStr);
     }
 
     public async Task<Company> GetCompany(int id)

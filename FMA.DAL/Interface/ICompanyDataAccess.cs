@@ -1,11 +1,14 @@
 ﻿using FMA.Entities;
+using FMA.Entities.Common;
 using FMA.Entities.Dto;
 
 namespace FMA.DAL.Interface;
 
 public interface ICompanyDataAccess 
 {
-    public Task<IEnumerable<Company>> GetCompanies();
+    public Task<IEnumerable<Company>> GetAllCompanies();
+   
+    public Task<PagingResponseModel<List<Company>>> GetCompanyWithPaging(int pageNumber, int pageSize, string searchStr);
         
     public Task<Company> GetCompany(int id);
        

@@ -1,4 +1,5 @@
 ﻿using FMA.Entities;
+using FMA.Entities.Common;
 using FMA.Entities.Dto;
 
 namespace FMA.Business.Interface;
@@ -6,6 +7,8 @@ namespace FMA.Business.Interface;
 public interface ICompanyBiz
 {
     public Task<IEnumerable<Company>> GetCompanies();
+
+    public Task<PagingResponseModel<List<Company>>> GetCompanyWithPaging(int pageNumber, int pageSize, string searchStr);
 
     public Task<Company> GetCompany(int id);
 
