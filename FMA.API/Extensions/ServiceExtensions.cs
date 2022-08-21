@@ -9,6 +9,7 @@ public static class ServiceExtensions
     public static void AddDependencies(this IServiceCollection services)
     {
         services.AddScoped<ICompanyBiz, CompanyBiz>();
+        services.AddScoped<IAccountService, AccountService>();
         DiExtension.InjectDataAccess(services);
     }
 }

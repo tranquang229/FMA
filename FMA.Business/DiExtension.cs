@@ -12,5 +12,6 @@ public class DiExtension
         services.AddTransient<IUnitOfWork, UnitOfWork>();
 
         services.AddScoped<ICompanyDataAccess, CompanyDataAccess>();
+        services.AddScoped<IAccountDataAccess, AccountDataAccess>();
     }
 }
