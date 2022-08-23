@@ -17,6 +17,9 @@ public class DiExtension
 
         // Account
         services.AddScoped<IJwtUtils, JwtUtils>();
-        services.AddScoped<IUserDataAccess, UserDataAccess>();
+        services.AddScoped<IAccountDataAccess, AccountDataAccess>();
+
+        // TodoItem
+        services.AddScoped<ITodoItemDataAccess, TodoItemDataAccess>();
     }
 }

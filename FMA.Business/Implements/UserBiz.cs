@@ -7,14 +7,14 @@ namespace FMA.Business.Implements;
 
 public class UserBiz : IUserBiz
 {
-    private readonly IUserDataAccess _userDataAccess;
+    private readonly IAccountDataAccess _userDataAccess;
 
-    public UserBiz(IUserDataAccess userDataAccess)
+    public UserBiz(IAccountDataAccess userDataAccess)
     {
         _userDataAccess = userDataAccess;
     }
 
-    public async Task<long> Register(RegisterRequest request)
+    public async Task<Account> Register(RegisterRequest request)
     {
         return await _userDataAccess.Register(request);
     }

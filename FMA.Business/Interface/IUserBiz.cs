@@ -5,7 +5,7 @@ namespace FMA.Business.Interface;
 
 public interface IUserBiz
 {
-    Task<long> Register(RegisterRequest request);
+    Task<Account> Register(RegisterRequest request);
     
     Task<AuthenticateResponse> Authenticate(AuthenticateRequest model);
    
