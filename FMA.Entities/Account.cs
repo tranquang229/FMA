@@ -22,4 +22,6 @@ public class Account
 
     [JsonIgnore]
     public string PasswordHash { get; set; }
+
+    public List<TodoItem> TodoItems { get; set; } = new ();
 }

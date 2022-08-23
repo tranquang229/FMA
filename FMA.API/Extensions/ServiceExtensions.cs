@@ -10,6 +10,7 @@ public static class ServiceExtensions
     {
         services.AddScoped<ICompanyBiz, CompanyBiz>();
         services.AddScoped<IUserBiz, UserBiz>();
+        services.AddScoped<ITodoItemBiz, TodoItemBiz>();
 
         DiExtension.InjectDataAccess(services);
     }

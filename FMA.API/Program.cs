@@ -1,10 +1,6 @@
 using FMA.API.Extensions;
 using FMA.API.Middlewares;
-using FMA.Business.Implements;
-using FMA.Business.Interface;
 using FMA.DAL.Context;
-using FMA.DAL.Implement;
-using FMA.DAL.Interface;
 using FMA.Entities.Common.Settings;
 using System.Text.Json;
 
@@ -19,6 +15,8 @@ services.Configure<JwtSetting>(builder.Configuration.GetSection("JwtSetting"));
 // configure DI for application services
 services.AddSingleton<DapperContext>();
 services.AddDependencies();
+services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;

@@ -12,20 +12,20 @@ using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace FMA.DAL.Implement;
 
-public class UserDataAccess : IUserDataAccess
+public class AccountDataAccess : IAccountDataAccess
 {
     private readonly IJwtUtils _jwtUtils;
     private readonly JwtSetting _jwtSetting;
     private readonly DapperContext _context;
 
-    public UserDataAccess(IJwtUtils jwtUtils, IOptions<JwtSetting> jwtSetting, DapperContext context)
+    public AccountDataAccess(IJwtUtils jwtUtils, IOptions<JwtSetting> jwtSetting, DapperContext context)
     {
         _jwtUtils = jwtUtils;
         _jwtSetting = jwtSetting.Value;
         _context = context;
     }
 
-    public async Task<long> Register(RegisterRequest request)
+    public async Task<Account> Register(RegisterRequest request)
     {
         using var connection = _context.CreateConnection();
         var user = new Account
@@ -43,8 +43,9 @@ public class UserDataAccess : IUserDataAccess
             throw new AppException("Account with this username is already existed");
         }
         var newId = await connection.InsertAsync<long, Account>(user);
-      
-        return newId;
+        user.Id = newId;
+        
+        return user;
     }
 
     public async Task<AuthenticateResponse> Authenticate(AuthenticateRequest model)

@@ -30,8 +30,8 @@ public class AccountsController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterRequest request)
     {
-        var response =  await _userBiz.Register(request);
-        return Ok(response);
+        var account =  await _userBiz.Register(request);
+        return Ok(account);
     }
 
     [Authorize(Role.Admin)]
