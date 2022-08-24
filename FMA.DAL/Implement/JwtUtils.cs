@@ -1,27 +1,36 @@
-﻿using FMA.DAL.Interface;
+﻿
+using System.Collections;
+using System.Data;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Dapper;
+using FMA.DAL.Context;
+using FMA.DAL.Interface;
 using FMA.Entities;
 using FMA.Entities.Common.Settings;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+using Newtonsoft.Json;
+using static Dapper.SqlMapper;
 
 namespace FMA.DAL.Implement;
 
 public class JwtUtils : IJwtUtils
 {
     private readonly JwtSetting _jwtSetting;
+    private readonly DapperContext _context;
 
-    public JwtUtils(IOptions<JwtSetting> jwtSetting)
+    public JwtUtils(IOptions<JwtSetting> jwtSetting, DapperContext context)
     {
+        _context = context;
         _jwtSetting = jwtSetting.Value;
     }
 
-    public string GenerateJwtToken(Account account)
+    public async Task<string> GenerateJwtToken(Account account)
     {
         var signingCredentials = GetSigningCredential();
-        var claims = GetClaims(account);
+        var claims = await GetClaims(account);
         var token = GenerateTokenOptions(signingCredentials, claims);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
@@ -70,24 +79,42 @@ public class JwtUtils : IJwtUtils
 
         return token;
     }
-    private List<Claim> GetClaims(Account account)
+    private async Task<List<Claim>> GetClaims(Account account)
     {
-        var claims = new[]
+        using var connection = _context.CreateConnection();
+        var p = new
+        {
+            AccountId = account.Id
+        };
+
+        //var userRoles = await connection.QueryAsync<>().GetRolesAsync(user);
+        var authClaims = new List<Claim>
         {
             new Claim(JwtRegisteredClaimNames.Sub, account.Username),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(JwtRegisteredClaimNames.Email, account.Email ??""),
-            new Claim(Constants.ROLE, account.Role.ToString()),
-            new Claim(Constants.UId, account.Id.ToString())
-        };
+            new Claim(Constants.UId, account.Id.ToString()),
+    };
 
-        return claims.ToList();
+        var roles = await connection.QueryAsync<Role>("GetRolesFromAccount", p, commandType: CommandType.StoredProcedure);
+        foreach (var userRole in roles)
+        {
+            authClaims.Add(new Claim(Constants.ROLES, userRole.Name));
+        }
+      
+        var permissions = await connection.QueryAsync<Permission>("GetFullPermissionFromAccountId", p, commandType: CommandType.StoredProcedure);
+        foreach (var userPermission in permissions)
+        {
+            authClaims.Add(new Claim(Constants.PERMISSIONS, userPermission.Name));
+        }
+
+        return authClaims.ToList();
     }
 
     private SigningCredentials GetSigningCredential()
     {
         var secret = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSetting.Key));
-       
+
         return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
     }
 }

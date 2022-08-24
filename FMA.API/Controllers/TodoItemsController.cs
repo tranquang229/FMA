@@ -1,8 +1,12 @@
-﻿using FMA.API.Authorization;
+﻿using AutoMapper;
+using FMA.API.Authorization;
 using FMA.Business.Implements;
 using FMA.Business.Interface;
 using FMA.Entities;
 using FMA.Entities.Dto;
+using FMA.Entities.Dto.TodoItem;
+using FMA.Entities.Enum;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,19 +17,37 @@ namespace FMA.API.Controllers
     public class TodoItemsController : BaseController
     {
         private readonly ITodoItemBiz _todoItemBiz;
+        private readonly IMapper _mapper;
 
-        public TodoItemsController(ITodoItemBiz todoItemBiz)
+        public TodoItemsController(ITodoItemBiz todoItemBiz, IMapper mapper)
         {
             _todoItemBiz = todoItemBiz;
+            _mapper = mapper;
         }
 
-        [Authorize(Role.Admin, Role.User)]
+        [Authorize(Policy = "Manager")]
         [HttpGet("all")]
         public async Task<IActionResult> GetAllTodoItems()
         {
             try
             {
                 var todoItems = await _todoItemBiz.GetAllTodoItems();
+                return Ok(_mapper.Map<IEnumerable<TodoItemDto>>(todoItems));
+            }
+            catch (Exception ex)
+            {
+                //log error
+                return StatusCode(500, ex.Message);
+            }
+        }
+        
+        [Roles(EnumRole.Admin, EnumRole.SuperAdmin)]
+        [HttpGet("allv2")]
+        public async Task<IActionResult> GetAllTodoItemsV2()
+        {
+            try
+            {
+                var todoItems = await _todoItemBiz.GetAllTodoItemsV2();
                 return Ok(todoItems);
             }
             catch (Exception ex)
@@ -34,9 +56,8 @@ namespace FMA.API.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-       
-        
-        [Authorize(Role.Admin, Role.User)]
+
+        [Roles(EnumRole.Admin, EnumRole.User)]
         [HttpGet]
         public async Task<IActionResult> GetTodoItemsWithPaging(int pageNumber, int pageSize, string searchStr)
         {
@@ -52,7 +73,7 @@ namespace FMA.API.Controllers
             }
         }
 
-        [Authorize(Role.Admin, Role.User)]
+        [Roles(EnumRole.Admin, EnumRole.User)]
         [HttpGet("{id}", Name = "TodoItemById")]
         public async Task<IActionResult> GetTodoItem(int id)
         {
@@ -70,7 +91,7 @@ namespace FMA.API.Controllers
             }
         }
 
-        [Authorize(Role.Admin, Role.User)]
+        [Roles(EnumRole.Admin, EnumRole.User)]
         [HttpPost]
         public async Task<IActionResult> CreateTodoItem(TodoItemDto todoItem)
         {
@@ -88,7 +109,7 @@ namespace FMA.API.Controllers
             }
         }
 
-        [Authorize(Role.Admin, Role.User)]
+        [Roles(EnumRole.Admin, EnumRole.User)]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTodoItem(int id, TodoItemDto todoItem)
         {
@@ -104,7 +125,7 @@ namespace FMA.API.Controllers
             }
         }
 
-        [Authorize(Role.Admin, Role.User)]
+        [Roles(EnumRole.Admin, EnumRole.User)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCompany(long id)
         {
@@ -120,7 +141,7 @@ namespace FMA.API.Controllers
             }
         }
 
-        [Authorize(Role.Admin, Role.User)]
+        [Roles(EnumRole.Admin, EnumRole.User)]
         [HttpGet("ByAccountId/{id}")]
         public async Task<IActionResult> GetCompanyForAccount(long id)
         {
@@ -138,7 +159,7 @@ namespace FMA.API.Controllers
             }
         }
 
-        [Authorize(Role.Admin, Role.User)]
+        [Roles(EnumRole.Admin, EnumRole.User)]
         [HttpGet("{id}/MultipleResult")]
         public async Task<IActionResult> GetCompanyEmployeesMultipleResult(int id)
         {
@@ -146,14 +167,14 @@ namespace FMA.API.Controllers
         }
 
 
-        [Authorize(Role.Admin, Role.User)]
+        [Roles(EnumRole.Admin, EnumRole.User)]
         [HttpGet("MultipleMapping")]
         public async Task<IActionResult> GetCompaniesEmployeesMultipleMapping()
         {
             throw new Exception();
         }
 
-        [Authorize(Role.Admin, Role.User)]
+        [Roles(EnumRole.Admin)]
         [HttpPost("CreateMultipleCompanies")]
         public async Task<IActionResult> CreateMultipleCompanies(List<CompanyDto> list)
         {

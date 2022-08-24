@@ -7,6 +7,7 @@ using FMA.Entities;
 using FMA.Entities.Common.Exceptions;
 using FMA.Entities.Common.Settings;
 using FMA.Entities.Dto;
+using FMA.Entities.Enum;
 using Microsoft.Extensions.Options;
 using BCryptNet = BCrypt.Net.BCrypt;
 
@@ -34,7 +35,8 @@ public class AccountDataAccess : IAccountDataAccess
             LastName = request.LastName,
             Username = request.Username,
             PasswordHash = BCryptNet.HashPassword(request.Password),
-            Role = Role.User
+            Email = request.Email,
+            Phone = request.Phone
         };
 
         var account = await GetAccountByUsername(connection, request.Username);
@@ -42,10 +44,24 @@ public class AccountDataAccess : IAccountDataAccess
         {
             throw new AppException("Account with this username is already existed");
         }
-        var newId = await connection.InsertAsync<long, Account>(user);
-        user.Id = newId;
-        
+        var newAccountId = await connection.InsertAsync<long, Account>(user);
+        user.Id = newAccountId;
+
+        await InsertAccountRole(connection, user);
+
         return user;
+    }
+
+    private static async Task InsertAccountRole(IDbConnection connection, Account account)
+    {
+        var role = await connection.QueryFirstAsync<Role>("SELECT * FROM Roles WHERE Roles.Name = @RoleName",
+            new { RoleName = EnumRole.User.ToString() });
+        var p = new DynamicParameters();
+        p.Add("@AccountId", account.Id);
+        p.Add("@RoleId", role.Id);
+        string sql = $@"INSERT INTO dbo.AccountRoles (AccountId, RoleId) VALUES (@AccountId, @RoleId)";
+
+        await connection.ExecuteAsync(sql, p);
     }
 
     public async Task<AuthenticateResponse> Authenticate(AuthenticateRequest model)
@@ -53,13 +69,13 @@ public class AccountDataAccess : IAccountDataAccess
         using var connection = _context.CreateConnection();
 
         var account = await GetAccountByUsername(connection, model.Username);
-
+     
         // validate
         if (account == null || !BCryptNet.Verify(model.Password, account.PasswordHash))
             throw new AppException("Username or password is incorrect");
 
         // authentication successful so generate jwt token
-        var jwtToken = _jwtUtils.GenerateJwtToken(account);
+        var jwtToken = await _jwtUtils.GenerateJwtToken(account);
 
         return new AuthenticateResponse(account, jwtToken);
     }
@@ -71,17 +87,55 @@ public class AccountDataAccess : IAccountDataAccess
         return users;
     }
 
-    public async Task<Account> GetById(long id)
+    public async Task<Account> GetById(long accountId)
     {
         using var connection = _context.CreateConnection();
-        var user = await connection.GetAsync<Account>(id);
-        return user;
+        var account = await connection.GetAsync<Account>(accountId);
+        var roles = await GetRolesFromAccount(account.Id);
+        account.Roles = roles.Select(x=>x.Name).ToList();
+        account.Permissions = (await GetFullPermissionFromAccountId(accountId)).Select(x => x.Name).ToList();
+     
+        return account;
     }
+
+    public async Task<List<Role>> GetRolesFromAccount(long accountId)
+    {
+        using var connection = _context.CreateConnection();
+        var p = new
+        {
+            AccountId = accountId
+        };
+        var roles = await connection.QueryAsync<Role>("GetRolesFromAccount",  p, commandType:CommandType.StoredProcedure);
+        
+        return roles.ToList();
+    }
+    
+    public async Task<List<Permission>> GetFullPermissionFromAccountId(long accountId)
+    {
+        using var connection = _context.CreateConnection();
+        var p = new
+        {
+            AccountId = accountId
+        };
+        var permissions = await connection.QueryAsync<Permission>("GetFullPermissionFromAccountId", p, commandType:CommandType.StoredProcedure);
+
+        return permissions.ToList();
+    }
+
 
     private async Task<Account> GetAccountByUsername(IDbConnection connection, string userName)
     {
         var accounts = await connection.GetListAsync<Account>(new { Username = userName });
         var account = accounts.FirstOrDefault();
+        if (account != null)
+        {
+            var roles = await GetRolesFromAccount(account.Id);
+            account.Roles = roles.Select(x=>x.Name).ToList();
+
+            var permissions = await GetFullPermissionFromAccountId(account.Id);
+            account.Permissions = permissions.Select(x => x.Name).ToList();
+        }
+        
         return account;
     }
 }

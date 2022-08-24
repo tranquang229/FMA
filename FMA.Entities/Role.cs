@@ -1,7 +1,12 @@
-﻿namespace FMA.Entities;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-public enum Role
+namespace FMA.Entities;
+
+[Table("Roles")]
+public class Role
 {
-    Admin,
-    User
+    [Key]
+    public long Id { get; set; }
+    public string  Name { get; set; }
 }

@@ -16,5 +16,5 @@ public class AccountDto
 
     public string Email { get; set; }
 
-    public List<TodoItem> TodoItems { get; set; } = new();
+    public List<Entities.TodoItem> TodoItems { get; set; } = new();
 }

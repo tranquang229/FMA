@@ -1,8 +1,10 @@
+using System.Security.Claims;
 using FMA.API.Extensions;
 using FMA.API.Middlewares;
 using FMA.DAL.Context;
 using FMA.Entities.Common.Settings;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -16,6 +18,17 @@ services.Configure<JwtSetting>(builder.Configuration.GetSection("JwtSetting"));
 services.AddSingleton<DapperContext>();
 services.AddDependencies();
 services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+
+//services.AddAuthorization(config =>
+//{
+//    config.AddPolicy("Manager", policyBuilder =>
+//    {
+//        policyBuilder.UserRequireCustomClaim(ClaimTypes.Email);
+//        policyBuilder.UserRequireCustomClaim(ClaimTypes.DateOfBirth);
+//    });
+//});
+//services.AddScoped<IAuthorizationHandler, PoliciesAuthorizationHandler>();
 
 services.AddControllers().AddJsonOptions(options =>
 {
@@ -46,11 +59,14 @@ var app = builder.Build();
     app.MapControllers();
 }
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI();
+//}
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 

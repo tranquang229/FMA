@@ -13,7 +13,7 @@ public class ProductsController : ControllerBase
   
     public ProductsController(IUnitOfWork unitOfWork)
     {
-        this._unitOfWork = unitOfWork;
+        _unitOfWork = unitOfWork;
     }
    
     [HttpGet]

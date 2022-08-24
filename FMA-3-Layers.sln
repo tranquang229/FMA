@@ -11,9 +11,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FMA.DAL", "FMA.DAL\FMA.DAL.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FMA.Entities", "FMA.Entities\FMA.Entities.csproj", "{BF098D69-5FD4-4100-86D5-D6B92DB9B0D1}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{51374D69-1A6A-4CF9-932F-017790C27397}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{AC5F23BB-ED9B-46B1-9B44-824755588A52}"
 	ProjectSection(SolutionItems) = preProject
-		C:\Users\Admin\Documents\script.sql = C:\Users\Admin\Documents\script.sql
+		README.txt = README.txt
+		script.sql = script.sql
 	EndProjectSection
 EndProject
 Global

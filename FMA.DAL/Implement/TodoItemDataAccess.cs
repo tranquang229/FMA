@@ -4,6 +4,7 @@ using FMA.DAL.Interface;
 using FMA.Entities;
 using FMA.Entities.Common;
 using FMA.Entities.Dto;
+using FMA.Entities.Dto.TodoItem;
 
 namespace FMA.DAL.Implement;
 
@@ -25,6 +26,25 @@ public class TodoItemDataAccess : ITodoItemDataAccess
             return todoItems.ToList();
         }
     }
+
+    public async Task<IEnumerable<TodoItemWithAccountDto>> GetAllTodoItemsV2()
+    {
+        string sql = "Select * FROM TodoItems ti JOIN Accounts acc ON ti.AccountId = acc.Id";
+        using var connection = _context.CreateConnection();
+        var todoItems = await connection.QueryAsync<TodoItem, Account, TodoItemWithAccountDto>(sql, (todoItem, acc) =>
+            new TodoItemWithAccountDto
+            {
+                Account = acc,
+                Content = todoItem.Content,
+                CreatedDate = todoItem.CreatedDate,
+                Id = todoItem.Id,
+                IsDone = todoItem.IsDone,
+                UpdatedDate = todoItem.UpdatedDate
+            });
+        return todoItems;
+    }
+
+
 
     public Task<PagingResponseModel<List<TodoItem>>> GetTodoItemWithPaging(int pageNumber, int pageSize, string searchStr)
     {

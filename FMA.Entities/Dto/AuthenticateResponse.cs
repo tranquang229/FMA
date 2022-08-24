@@ -6,7 +6,8 @@ public class AuthenticateResponse
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Username { get; set; }
-    public Role Role { get; set; }
+    public List<string> Roles { get; set; }
+    public List<string> Permissions { get; set; }
     public string Token { get; set; }
 
     public AuthenticateResponse(Account user, string token)
@@ -16,5 +17,7 @@ public class AuthenticateResponse
         LastName = user.LastName;
         Username = user.Username;
         Token = token;
+        Roles = user.Roles;
+        Permissions = user.Permissions;
     }
 }

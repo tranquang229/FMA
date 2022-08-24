@@ -1,12 +1,13 @@
 ﻿using FMA.Entities.Common;
-using FMA.Entities.Dto;
 using FMA.Entities;
+using FMA.Entities.Dto.TodoItem;
 
 namespace FMA.Business.Interface;
 
 public interface ITodoItemBiz
 {
     public Task<IEnumerable<TodoItem>> GetAllTodoItems();
+    public Task<IEnumerable<TodoItemWithAccountDto>> GetAllTodoItemsV2();
 
     public Task<PagingResponseModel<List<TodoItem>>> GetTodoItemWithPaging(int pageNumber, int pageSize, string searchStr);
 

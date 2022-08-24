@@ -1,10 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿namespace FMA.Entities.Dto.TodoItem;
 
-namespace FMA.Entities.Dto;
-
-public class TodoItemDto
+public class TodoItemWithAccountDto
 {
-    [Key]
     public long Id { get; set; }
     public string Content { get; set; }
 
@@ -12,5 +9,5 @@ public class TodoItemDto
     public DateTime? CreatedDate { get; set; }
     public DateTime? UpdatedDate { get; set; }
 
-    public long AccountId { get; set; }
+    public Account Account { get; set; }
 }

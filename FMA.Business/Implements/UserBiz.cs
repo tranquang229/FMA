@@ -29,8 +29,18 @@ public class UserBiz : IUserBiz
         return await _userDataAccess.GetAll();
     }
 
-    public async Task<Account> GetById(long id)
+    public async Task<Account> GetById(long accountId)
     {
-        return await _userDataAccess.GetById(id);
+        return await _userDataAccess.GetById(accountId);
+    }
+
+    public async Task<List<Role>> GetRolesFromAccount(long accountId)
+    {
+        return await _userDataAccess.GetRolesFromAccount(accountId);
+    }
+
+    public async Task<List<Permission>> GetFullPermissionFromAccountId(long accountId)
+    {
+        return await _userDataAccess.GetFullPermissionFromAccountId(accountId);
     }
 }

@@ -3,6 +3,8 @@ using FMA.Business.Interface;
 using FMA.Entities;
 using FMA.Entities.Common.Responses;
 using FMA.Entities.Dto;
+using FMA.Entities.Enum;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FMA.API.Controllers;
@@ -18,7 +20,7 @@ public class AccountsController : ControllerBase
         _userBiz = userBiz;
     }
 
-    [AllowAnonymous]
+    [Authorization.AllowAnonymous]
     [HttpPost("authenticate")]
     public async Task<BaseResponse<AuthenticateResponse>> Authenticate(AuthenticateRequest model)
     {
@@ -26,7 +28,7 @@ public class AccountsController : ControllerBase
         return new ResponseSuccess<AuthenticateResponse>(response);
     }
 
-    [AllowAnonymous]
+    [Authorization.AllowAnonymous]
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterRequest request)
     {
@@ -34,20 +36,21 @@ public class AccountsController : ControllerBase
         return Ok(account);
     }
 
-    [Authorize(Role.Admin)]
     [HttpGet]
+    [Permissions(EnumPermission.AccountGetList)]
     public async Task<IActionResult> GetAll()
     {
         var users =await _userBiz.GetAll();
         return Ok(users);
     }
-
+    
+    [Roles(EnumRole.Admin)]
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById(int id)
     {
         // only admins can access other user records
         var currentUser = (Account)HttpContext.Items[Constants.Account];
-        if (id != currentUser.Id && currentUser.Role != Role.Admin)
+        if (id != currentUser.Id && !currentUser.Roles.Contains("Admin"))
             return Unauthorized(new { message = Constants.UNAUTHORIZED });
 
         var user = await _userBiz.GetById(id);

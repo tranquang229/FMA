@@ -7,6 +7,7 @@ using System.Data;
 using FMA.Entities.Common;
 using Microsoft.Extensions.Configuration;
 using System.Data.SqlClient;
+using System.Collections.Generic;
 
 namespace FMA.DAL.Implement;
 
@@ -197,4 +198,19 @@ public class CompanyDataAccess : ICompanyDataAccess
             }
         }
     }
+
+    //public async Task CreateCompany(CompanyDto companies)
+    //{
+    //    var query = "INSERT INTO Companies (Name, Address, Country) VALUES (@Name, @Address, @Country)";
+    //    using (var connection = _context.CreateConnection())
+    //    {
+    //        connection.Open();
+    //        using (var transaction = connection.BeginTransaction())
+    //        {
+    //            var listInput = new List<CompanyDto>();
+    //            CreateMultipleCompanies(listInput);
+    //            transaction.Commit();
+    //        }
+    //    }
+    //}
 }

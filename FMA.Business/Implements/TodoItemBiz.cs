@@ -2,22 +2,29 @@
 using FMA.DAL.Interface;
 using FMA.Entities;
 using FMA.Entities.Common;
-using FMA.Entities.Dto;
+using FMA.Entities.Dto.TodoItem;
 
 namespace FMA.Business.Implements;
 
-public class TodoItemBiz:ITodoItemBiz
+public class TodoItemBiz : ITodoItemBiz
 {
     private readonly ITodoItemDataAccess _todoItemDataAccess;
+    private readonly IAccountDataAccess _accountDataAccess;
 
-    public TodoItemBiz(ITodoItemDataAccess todoItemDataAccess)
+    public TodoItemBiz(ITodoItemDataAccess todoItemDataAccess, IAccountDataAccess accountDataAccess)
     {
         _todoItemDataAccess = todoItemDataAccess;
+        _accountDataAccess = accountDataAccess;
     }
 
-    public  async Task<IEnumerable<TodoItem>> GetAllTodoItems()
+    public async Task<IEnumerable<TodoItem>> GetAllTodoItems()
     {
+        var account = await _accountDataAccess.GetById(36);
         return await _todoItemDataAccess.GetAllTodoItems();
+    }
+    public async Task<IEnumerable<TodoItemWithAccountDto>> GetAllTodoItemsV2()
+    {
+        return await _todoItemDataAccess.GetAllTodoItemsV2();
     }
 
     public async Task<PagingResponseModel<List<TodoItem>>> GetTodoItemWithPaging(int pageNumber, int pageSize, string searchStr)

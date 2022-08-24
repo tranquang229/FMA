@@ -1,17 +1,18 @@
 ﻿using FMA.Entities.Common;
-using FMA.Entities.Dto;
 using FMA.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FMA.Entities.Dto.TodoItem;
 
 namespace FMA.DAL.Interface
 {
     public interface ITodoItemDataAccess
     {
         public Task<IEnumerable<TodoItem>> GetAllTodoItems();
+        public Task<IEnumerable<TodoItemWithAccountDto>> GetAllTodoItemsV2();
 
         public Task<PagingResponseModel<List<TodoItem>>> GetTodoItemWithPaging(int pageNumber, int pageSize, string searchStr);
 
