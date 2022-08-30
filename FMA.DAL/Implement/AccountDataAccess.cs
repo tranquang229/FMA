@@ -1,6 +1,4 @@
-﻿using System.Data;
-using System.Reflection;
-using Dapper;
+﻿using Dapper;
 using FMA.DAL.Context;
 using FMA.DAL.Interface;
 using FMA.Entities;
@@ -9,6 +7,7 @@ using FMA.Entities.Common.Settings;
 using FMA.Entities.Dto;
 using FMA.Entities.Enum;
 using Microsoft.Extensions.Options;
+using System.Data;
 using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace FMA.DAL.Implement;

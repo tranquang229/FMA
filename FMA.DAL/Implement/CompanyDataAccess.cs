@@ -2,12 +2,9 @@
 using FMA.DAL.Context;
 using FMA.DAL.Interface;
 using FMA.Entities;
+using FMA.Entities.Common;
 using FMA.Entities.Dto;
 using System.Data;
-using FMA.Entities.Common;
-using Microsoft.Extensions.Configuration;
-using System.Data.SqlClient;
-using System.Collections.Generic;
 
 namespace FMA.DAL.Implement;
 
@@ -29,35 +26,6 @@ public class CompanyDataAccess : ICompanyDataAccess
             return companies.ToList();
         }
     }
-
-    //public async Task<PagingResponseModel<List<Company>>> GetCompanyWithPaging(int pageNumber, int pageSize, string searchString)
-    //{
-    //    int maxPagSize = 50;
-    //    pageSize = (pageSize > 0 && pageSize <= maxPagSize) ? pageSize : maxPagSize;
-
-    //    int skip = (pageNumber - 1) * pageSize;
-    //    int take = pageSize;
-
-    //    string query = @"SELECT 
-    //                        COUNT(*)
-    //                        FROM Companies WHERE Name LIKE @SearchStr
- 
-    //                        SELECT  * FROM Companies WHERE Name LIKE @SearchStr
-    //                        ORDER BY Id
-    //                        OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY"
-    //    ;
-
-    //    using (var connection = _context.CreateConnection())
-    //    {
-    //        var reader = await connection.QueryMultipleAsync(query, new { Skip = skip, Take = take, SearchStr = "%" + searchString + "%" });
-
-    //        int count = reader.Read<int>().FirstOrDefault();
-    //        List<Company> companies = (await reader.ReadAsync<Company>()).ToList();
-
-    //        var result = new PagingResponseModel<List<Company>>(companies, count, pageNumber, pageSize);
-    //        return result;
-    //    }
-    //}
 
     public async Task<PagingResponseModel<List<Company>>> GetCompanyWithPaging(int pageNumber, int pageSize, string searchString)
     {
@@ -198,19 +166,4 @@ public class CompanyDataAccess : ICompanyDataAccess
             }
         }
     }
-
-    //public async Task CreateCompany(CompanyDto companies)
-    //{
-    //    var query = "INSERT INTO Companies (Name, Address, Country) VALUES (@Name, @Address, @Country)";
-    //    using (var connection = _context.CreateConnection())
-    //    {
-    //        connection.Open();
-    //        using (var transaction = connection.BeginTransaction())
-    //        {
-    //            var listInput = new List<CompanyDto>();
-    //            CreateMultipleCompanies(listInput);
-    //            transaction.Commit();
-    //        }
-    //    }
-    //}
 }

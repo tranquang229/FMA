@@ -4,7 +4,6 @@ using FMA.Entities;
 using FMA.Entities.Common.Responses;
 using FMA.Entities.Dto;
 using FMA.Entities.Enum;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FMA.API.Controllers;
@@ -50,8 +49,8 @@ public class AccountsController : ControllerBase
     {
         // only admins can access other user records
         var currentUser = (Account)HttpContext.Items[Constants.Account];
-        if (id != currentUser.Id && !currentUser.Roles.Contains("Admin"))
-            return Unauthorized(new { message = Constants.UNAUTHORIZED });
+        if (id != currentUser.Id && !currentUser.Roles.Contains(Constants.Admin))
+            return Unauthorized(new { message = Constants.Unauthorized });
 
         var user = await _userBiz.GetById(id);
         return Ok(user);

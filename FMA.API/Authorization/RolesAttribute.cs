@@ -1,9 +1,9 @@
 ﻿using FMA.API.Extensions;
+using FMA.API.Utils;
 using FMA.Entities;
 using FMA.Entities.Enum;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.OpenApi.Extensions;
 
 namespace FMA.API.Authorization;
 
@@ -32,9 +32,9 @@ public class RolesAttribute : Attribute, IAuthorizationFilter
             if (account != null)
             {
                 var listAccountRoles = account.Roles.Select(x=> x.GetValueFromDescription<EnumRole>()).ToList();
-                if (_roles.Any() && !ListExtensions<EnumRole>.CheckListContain(listAccountRoles, _roles))
+                if (_roles.Any() && !ListUtils<EnumRole>.CheckListContain(listAccountRoles, _roles))
                 {
-                    context.Result = new JsonResult(new { message = Constants.UNAUTHORIZED }) { StatusCode = StatusCodes.Status401Unauthorized };
+                    context.Result = new JsonResult(new { message = Constants.Unauthorized }) { StatusCode = StatusCodes.Status401Unauthorized };
                 }
             }
         }

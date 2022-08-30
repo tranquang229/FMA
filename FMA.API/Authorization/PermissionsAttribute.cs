@@ -1,4 +1,4 @@
-﻿using FMA.API.Extensions;
+﻿using FMA.API.Utils;
 using FMA.Entities;
 using FMA.Entities.Enum;
 using Microsoft.AspNetCore.Mvc;
@@ -7,10 +7,6 @@ using Microsoft.OpenApi.Extensions;
 
 namespace FMA.API.Authorization;
 
-/// <summary>
-/// This attribute can be applied in the same places as the [Authorize] would go
-/// This will only allow users which has a permissions containing the enum Permission passed in 
-/// </summary>
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited = false)]
 public class PermissionsAttribute : Attribute, IAuthorizationFilter
 {
@@ -34,9 +30,9 @@ public class PermissionsAttribute : Attribute, IAuthorizationFilter
             if (account != null)
             {
                 var listAccountPermissions = account.Permissions.Select(x => x.GetEnumFromDisplayName<EnumPermission>()).ToList();
-                if (_permissions.Any() && !ListExtensions<EnumPermission>.CheckListContain(listAccountPermissions, _permissions))
+                if (_permissions.Any() && !ListUtils<EnumPermission>.CheckListContain(listAccountPermissions, _permissions))
                 {
-                    context.Result = new JsonResult(new { message = Constants.UNAUTHORIZED }) { StatusCode = StatusCodes.Status401Unauthorized };
+                    context.Result = new JsonResult(new { message = Constants.Unauthorized }) { StatusCode = StatusCodes.Status401Unauthorized };
                 }
             }
         }

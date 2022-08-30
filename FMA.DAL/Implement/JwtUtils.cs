@@ -1,18 +1,14 @@
-﻿
-using System.Collections;
-using System.Data;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using Dapper;
+﻿using Dapper;
 using FMA.DAL.Context;
 using FMA.DAL.Interface;
 using FMA.Entities;
 using FMA.Entities.Common.Settings;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
-using static Dapper.SqlMapper;
+using System.Data;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace FMA.DAL.Implement;
 
@@ -99,13 +95,13 @@ public class JwtUtils : IJwtUtils
         var roles = await connection.QueryAsync<Role>("GetRolesFromAccount", p, commandType: CommandType.StoredProcedure);
         foreach (var userRole in roles)
         {
-            authClaims.Add(new Claim(Constants.ROLES, userRole.Name));
+            authClaims.Add(new Claim(Constants.Roles, userRole.Name));
         }
-      
+
         var permissions = await connection.QueryAsync<Permission>("GetFullPermissionFromAccountId", p, commandType: CommandType.StoredProcedure);
         foreach (var userPermission in permissions)
         {
-            authClaims.Add(new Claim(Constants.PERMISSIONS, userPermission.Name));
+            authClaims.Add(new Claim(Constants.Permissions, userPermission.Name));
         }
 
         return authClaims.ToList();

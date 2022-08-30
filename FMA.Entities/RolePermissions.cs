@@ -1,8 +1,7 @@
-﻿namespace FMA.Entities
+﻿namespace FMA.Entities;
+
+public class RolePermissions
 {
-    public class RolePermissions
-    {
-        public long RoleId { get; set; }
-        public long PermissionId { get; set; }
-    }
+    public long RoleId { get; set; }
+    public long PermissionId { get; set; }
 }

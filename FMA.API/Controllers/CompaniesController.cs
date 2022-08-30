@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using FMA.Business.Interface;
 using FMA.Entities.Dto;
-using FMA.Business.Interface;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FMA.API.Controllers;

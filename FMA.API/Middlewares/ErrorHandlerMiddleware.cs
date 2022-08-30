@@ -1,6 +1,6 @@
-﻿using System.Net;
+﻿using FMA.Entities.Common.Exceptions;
+using System.Net;
 using System.Text.Json;
-using FMA.Entities.Common.Exceptions;
 
 namespace FMA.API.Middlewares;
 
